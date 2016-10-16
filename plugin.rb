@@ -40,6 +40,13 @@ class TwitchAuthenticator < ::Auth::Authenticator
 
     result
   end
+  
+  alias :old_request_phase :request_phase
+
+  def request_phase 
+	options[:authorize_params].merge!(:force_verify => 'true')
+	old_request_phase
+  end
 
   def after_create_account(user, auth)
     data = auth[:extra_data]
