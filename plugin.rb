@@ -70,7 +70,8 @@ auth_provider title: 'with Twitch',
     message: 'Log in with Twitch (Make sure pop up blockers are not enabled).',
     frame_width: 960,
     frame_height: 800,
-    authenticator: TwitchAuthenticator.new
+    authenticator: TwitchAuthenticator.new('twitch', trusted: true,
+      auto_create_account: true)
 
 register_css <<CSS
 
