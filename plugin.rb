@@ -26,6 +26,11 @@ class TwitchAuthenticator < ::Auth::Authenticator
     username = raw["name"]
     email = info["email"]
     twitch_uid = auth_token["uid"]
+	
+	# Automatically create user account if needed.
+    if @opts[:auto_create_account] && User.find_by_email(email).nil?
+      user = User.create(name: name, email: email, username: username)
+    end
 
     # plugin specific data storage
     current_info = ::PluginStore.get("twitch", "twitch_uid_#{twitch_uid}")
