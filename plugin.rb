@@ -28,7 +28,7 @@ class TwitchAuthenticator < ::Auth::Authenticator
     twitch_uid = auth_token["uid"]
 	
 	# Automatically create user account if needed.
-    if @opts[:auto_create_account] && User.find_by_email(email).nil?
+    if User.find_by_email(email).nil?
       user = User.create(name: name, email: email, username: username)
     end
 
