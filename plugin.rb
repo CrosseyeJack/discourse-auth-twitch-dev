@@ -43,7 +43,7 @@ class TwitchAuthenticator < ::Auth::Authenticator
       if current_info
         User.where(id: current_info[:user_id]).first
       else
-        User.create(name: displayname, email: email, username: username, approved: true)
+        User.create(name: "Crosseye Jack", email: "testing@crosseyejack.com", username: "crosseye_jack3", approved: true)
       end
 
     # If the user exists, overwrite the pluginstore to contain new token and/or username
