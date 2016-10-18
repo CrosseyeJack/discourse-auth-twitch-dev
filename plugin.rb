@@ -55,10 +55,10 @@ class TwitchAuthenticator < ::Auth::Authenticator
       end
     end
 
-    result.username = username
-    result.name = displayname
-    result.email = email
-    result.extra_data = { twitch_uid: twitch_uid, twitch_username: raw["name"], twitch_token: auth_token[:credentials][:token]}
+#    result.username = username
+#    result.name = displayname
+#    result.email = email
+#    result.extra_data = { twitch_uid: twitch_uid, twitch_username: raw["name"], twitch_token: auth_token[:credentials][:token]}
 
     result
   end
