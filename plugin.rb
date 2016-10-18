@@ -48,7 +48,7 @@ class TwitchAuthenticator < ::Auth::Authenticator
       end
     else
       log :info, "User NOT Found"
-      result.user = User.create(name: name, email: email, username: raw["name"])
+      user = User.create(name: name, email: email, username: raw["name"], active: true)
     end
     
     result.user =
