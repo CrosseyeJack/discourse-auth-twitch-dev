@@ -13,6 +13,10 @@ class TwitchAuthenticator < ::Auth::Authenticator
   def name
     'twitch'
   end
+  
+  def log(level, message)
+    OmniAuth.logger.send(level, "(#{name}) #{message}")
+  end
 
   def after_authenticate(auth_token)
     result = Auth::Result.new
@@ -37,18 +41,25 @@ class TwitchAuthenticator < ::Auth::Authenticator
 
     # If the user exists, overwrite the pluginstore to contain new token and/or username
     if result.user
+      log :info, "User Found"
       # Add comparison. No need to re-set the same data.
       if current_info[:token] != auth_token[:credentials][:token]
         ::PluginStore.set("twitch", "twitch_uid_#{twitch_uid}", {user_id: result.user.id, username: raw["name"], token: auth_token[:credentials][:token]})
       end
     else
+      log :info, "User NOT Found"
       result.user = User.create(name: name, email: email, username: raw["name"])
     end
+    
+    result.user =
+      if current_info
+        User.where(id: current_info[:user_id]).first
+      end
 
-#    result.username = username
-#    result.name = displayname
-#    result.email = email
-    #result.extra_data = { twitch_uid: twitch_uid, twitch_username: raw["name"], twitch_token: auth_token[:credentials][:token]}
+    result.username = username
+    result.name = displayname
+    result.email = email
+    result.extra_data = { twitch_uid: twitch_uid, twitch_username: raw["name"], twitch_token: auth_token[:credentials][:token]}
 
     result
   end
