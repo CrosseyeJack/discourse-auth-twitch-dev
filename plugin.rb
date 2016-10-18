@@ -41,11 +41,13 @@ class TwitchAuthenticator < ::Auth::Authenticator
       if current_info[:token] != auth_token[:credentials][:token]
         ::PluginStore.set("twitch", "twitch_uid_#{twitch_uid}", {user_id: result.user.id, username: raw["name"], token: auth_token[:credentials][:token]})
       end
+    else
+      result.user = User.create(name: name, email: email, username: raw["name"], active: true, token: auth_token[:credentials][:token])
     end
 
-    result.username = username
-    result.name = displayname
-    result.email = email
+#    result.username = username
+#    result.name = displayname
+#    result.email = email
     result.extra_data = { twitch_uid: twitch_uid, twitch_username: raw["name"], twitch_token: auth_token[:credentials][:token]}
 
     result
