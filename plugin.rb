@@ -53,6 +53,9 @@ class TwitchAuthenticator < ::Auth::Authenticator
       if current_info[:token] != auth_token[:credentials][:token]
         ::PluginStore.set("twitch", "twitch_uid_#{twitch_uid}", {user_id: result.user.id, username: raw["name"], token: auth_token[:credentials][:token]})
       end
+    else
+      log :info, "User not found"
+      log :info, "userdata: #{result.user}"
     end
 
 #    result.username = username
