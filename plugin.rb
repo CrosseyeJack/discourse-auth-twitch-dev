@@ -42,7 +42,7 @@ class TwitchAuthenticator < ::Auth::Authenticator
         ::PluginStore.set("twitch", "twitch_uid_#{twitch_uid}", {user_id: result.user.id, username: raw["name"], token: auth_token[:credentials][:token]})
       end
     else
-      result.user = User.create(name: name, email: email, username: raw["name"], active: true)
+      result.user = User.create(name: name, email: email, username: raw["name"])
     end
 
 #    result.username = username
