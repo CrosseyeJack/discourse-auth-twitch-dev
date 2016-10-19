@@ -39,15 +39,16 @@ class TwitchAuthenticator < ::Auth::Authenticator
 #      ::PluginStore.set("twitch", "twitch_uid_#{twitch_uid}", {user_id: twitch_uid, username: raw["name"], token: auth_token[:credentials][:token]})
 #    end
 
-    result.user =
-      if current_info
-        User.where(id: current_info[:user_id]).first
-      end
     
-    log :info, "User Create"
-    result.user = User.create!(name: username, email: email, username: username, approved: true)
-    result.email_valid = true
-
+    if current_info
+      log :info, "User found 222"
+      result.user = User.where(id: current_info[:user_id]).first
+    else
+      log :info, "User Create 222"
+      result.user = User.create!(name: username, email: email, username: username, approved: true)
+      result.email_valid = true
+    end
+    
     # If the user exists, overwrite the pluginstore to contain new token and/or username
     if result.user
       log :info, "User Found"
@@ -60,10 +61,10 @@ class TwitchAuthenticator < ::Auth::Authenticator
       log :info, "userdata: #{result.user}"
     end
 
-#    result.username = username
-#    result.name = displayname
-#    result.email = email
-#    result.extra_data = { twitch_uid: twitch_uid, twitch_username: raw["name"], twitch_token: auth_token[:credentials][:token]}
+    result.username = username
+    result.name = displayname
+    result.email = email
+    result.extra_data = { twitch_uid: twitch_uid, twitch_username: raw["name"], twitch_token: auth_token[:credentials][:token]}
 
     result
   end
