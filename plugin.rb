@@ -28,7 +28,7 @@ class TwitchAuthenticator < ::Auth::Authenticator
 
     # Use the case-specific display_name for username if available, strip spaces
     username = displayname
-    username = "CheeseCake"
+#    username = "CheeseCake"
     email = info["email"]
     twitch_uid = auth_token["uid"]
 
