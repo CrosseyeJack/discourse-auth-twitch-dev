@@ -4,6 +4,9 @@ discourse-auth-twitch
 Twitch API OAuth for Discourse
 
 Installation Instructions (for Docker installations):
+This plugin relies on some changes patched into Discourse - https://github.com/CrosseyeJack/discourse-twitch-oauth-patch
+
+These changes just mean we are relying on Twitch to validate our user names for us instead of discourse.
 
 * Open your container app.yml
 * Register a new Twitch API application at http://www.twitch.tv/kraken/oauth2/clients/new if you haven't already.
@@ -15,7 +18,7 @@ Installation Instructions (for Docker installations):
 ```
 * Under section ```hooks:``` append the following
 ```
-          - git clone https://github.com/night/discourse-auth-twitch.git
+          - git clone {Path to git}.git
 ```
 * Rebuild the docker container
 ```
