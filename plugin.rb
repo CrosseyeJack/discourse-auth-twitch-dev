@@ -41,11 +41,11 @@ class TwitchAuthenticator < ::Auth::Authenticator
 
     
     if current_info
-      log :info, "User found 222"
+      log :info, "User found 223"
       result.user = User.where(id: current_info[:user_id]).first
     else
-      log :info, "User Create 222"
-      result.user = User.create(name: username, email: email, username: "cheese_Cake", approved: true)
+      log :info, "User Create 223"
+      result.user = User.create(name: "cheesecake", email: email, username: "cheese_Cake", approved: true)
       result.email_valid = true
 #      result.username = username
 #      result.name = displayname
