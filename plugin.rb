@@ -27,47 +27,28 @@ class TwitchAuthenticator < ::Auth::Authenticator
     displayname = raw["display_name"] || raw["name"]
 
     # Use the case-specific display_name for username if available, strip spaces
-    username = displayname
-#    username = "CheeseCake"
+    username = raw["name"]
     email = info["email"]
     twitch_uid = auth_token["uid"]
 
     # plugin specific data storage
     current_info = ::PluginStore.get("twitch", "twitch_uid_#{twitch_uid}")
-    
-#    if User.find_by_username(username).nil?
-#      user = User.create(name: displayname, email: email, username: username, approved: true)
-#      ::PluginStore.set("twitch", "twitch_uid_#{twitch_uid}", {user_id: twitch_uid, username: raw["name"], token: auth_token[:credentials][:token]})
-#    end
 
     
     if User.find_by_username(username)
-      log :info, "User found 223"
       result.user = User.where(id: current_info[:user_id]).first
     else
-      log :info, "User Create 223"
-      result.user = User.create!(name: username, email: email, username: username, approved: true)
+      result.user = User.create(name: displayname, email: email, username: username, approved: true)
       result.email_valid = true
-#      result.username = username
-#      result.name = displayname
-#      result.email = email
     end
     
     # If the user exists, overwrite the pluginstore to contain new token and/or username
     if result.user
-      log :info, "User Found"
       # Add comparison. No need to re-set the same data.
       if current_info[:token] != auth_token[:credentials][:token]
-        ::PluginStore.set("twitch", "twitch_uid_#{twitch_uid}", {user_id: result.user.id, username: raw["name"], token: auth_token[:credentials][:token]})
+        ::PluginStore.set("twitch", "twitch_uid_#{twitch_uid}", {user_id: result.user.id, username: username, token: auth_token[:credentials][:token]})
       end
-    else
-      log :info, "User not found"
-      log :info, "userdata: #{result.user}"
     end
-
-#    result.username = username
-#    result.name = displayname
-#    result.email = email
     result.extra_data = { twitch_uid: twitch_uid, twitch_username: raw["name"], twitch_token: auth_token[:credentials][:token]}
 
     result
