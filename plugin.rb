@@ -28,24 +28,25 @@ class TwitchAuthenticator < ::Auth::Authenticator
 
     # Use the case-specific display_name for username if available, strip spaces
     username = displayname
+    username = "CheeseCake"
     email = info["email"]
     twitch_uid = auth_token["uid"]
 
     # plugin specific data storage
     current_info = ::PluginStore.get("twitch", "twitch_uid_#{twitch_uid}")
     
-#    if User.find_by_email(email).nil?
+#    if User.find_by_username(username).nil?
 #      user = User.create(name: displayname, email: email, username: username, approved: true)
 #      ::PluginStore.set("twitch", "twitch_uid_#{twitch_uid}", {user_id: twitch_uid, username: raw["name"], token: auth_token[:credentials][:token]})
 #    end
 
     
-    if current_info
+    if User.find_by_username(username)
       log :info, "User found 223"
       result.user = User.where(id: current_info[:user_id]).first
     else
       log :info, "User Create 223"
-      result.user = User.create(name: "cheesecake", email: email, username: "cheese_Cake", approved: true)
+      result.user = User.create!(name: username, email: email, username: username, approved: true)
       result.email_valid = true
 #      result.username = username
 #      result.name = displayname
