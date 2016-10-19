@@ -39,6 +39,8 @@ class TwitchAuthenticator < ::Auth::Authenticator
       result.user = User.where(id: current_info[:user_id]).first
     else
       result.user = User.create(name: displayname, email: email, username: username, approved: true)
+      result.email = email
+      result.name = displayname
       result.email_valid = true
     end
     
