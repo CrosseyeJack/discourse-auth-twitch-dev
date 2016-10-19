@@ -30,29 +30,36 @@ class TwitchAuthenticator < ::Auth::Authenticator
     username = raw["name"]
     email = info["email"]
     twitch_uid = auth_token["uid"]
-
-    # plugin specific data storage
-    current_info = ::PluginStore.get("twitch", "twitch_uid_#{twitch_uid}")
-
     
     if User.find_by_username(username)
+      current_info = ::PluginStore.get("twitch", "twitch_uid_#{twitch_uid}")
       result.user = User.where(id: current_info[:user_id]).first
     else
+      unless SiteSetting.allow_new_registrations
+        result.failed = true
+        result.failed_reason = I18n.t("login.new_registrations_disabled")
+        return result
+      end
+      if User.find_by_email(email)
+        log :info, "Email already exists"
+        result.failed = true
+        result.failed_reason = I18n.t("login.something_already_taken")
+        return result
+      end
       result.user = User.create(name: displayname, email: email, username: username, approved: true)
-      result.email = email
-      result.name = displayname
       result.email_valid = true
+      ::PluginStore.set("twitch", "twitch_uid_#{twitch_uid}", {user_id: result.user.id, username: username, token: auth_token[:credentials][:token]})
+      log :info, "NEW USER: #{result.user} #{result.email} #{result.name} #{result.email_valid}"
     end
     
     # If the user exists, overwrite the pluginstore to contain new token and/or username
-    if result.user
+    if current_info
       # Add comparison. No need to re-set the same data.
       if current_info[:token] != auth_token[:credentials][:token]
         ::PluginStore.set("twitch", "twitch_uid_#{twitch_uid}", {user_id: result.user.id, username: username, token: auth_token[:credentials][:token]})
       end
     end
-    result.extra_data = { twitch_uid: twitch_uid, twitch_username: raw["name"], twitch_token: auth_token[:credentials][:token]}
-
+    result.extra_data = { twitch_uid: twitch_uid, twitch_username: username, twitch_token: auth_token[:credentials][:token]}
     result
   end
 
@@ -61,7 +68,6 @@ class TwitchAuthenticator < ::Auth::Authenticator
     ::PluginStore.set("twitch", "twitch_uid_#{data[:twitch_uid]}", {user_id: user.id, username: data[:twitch_username], token: data[:twitch_token]})
   end
 
-
   def register_middleware(omniauth)
     omniauth.provider :twitch,
      CLIENT_ID,
@@ -69,7 +75,6 @@ class TwitchAuthenticator < ::Auth::Authenticator
      scope: 'user_read user_subscriptions'
   end
 end
-
 
 auth_provider title: 'with Twitch',
     message: 'Log in with Twitch (Make sure pop up blockers are not enabled).',
